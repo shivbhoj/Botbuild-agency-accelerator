@@ -1,0 +1,14 @@
+{
+  "name": "botbuild-agency-accelerator",
+  "version": "1.0.0",
+  "description": "Code Generation Engine for Botbuild Agency Accelerator",
+  "main": "src/core/generator.js",
+  "type": "module",
+  "scripts": {
+    "test": "node src/test.js",
+    "benchmark": "node src/benchmark.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
