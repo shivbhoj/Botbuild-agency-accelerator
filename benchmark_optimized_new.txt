@@ -1,0 +1,7 @@
+
+> botbuild-agency-accelerator@1.0.0 benchmark
+> node src/benchmark.js
+
+Starting benchmark: 1000 iterations...
+Total time: 15.37ms
+Average time per iteration: 0.0154ms
