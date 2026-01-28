@@ -86,6 +86,15 @@ try {
   console.log("✅ Test Passed: Correctly throws error for whitespace-only clientName");
 }
 
+try {
+  generateCode({ clientName: "Test", botGoal: "   " });
+  console.error("❌ Test Failed: Should throw error for whitespace-only botGoal");
+  process.exit(1);
+} catch (e) {
+  assert(e.message.includes("botGoal"));
+  console.log("✅ Test Passed: Correctly throws error for whitespace-only botGoal");
+}
+
 // Test with special characters in data
 console.log("\nTesting special characters...");
 const specialCharsData = {

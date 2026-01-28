@@ -11,8 +11,8 @@ const templateCache = new Map();
 /**
  * Generates code from template by replacing placeholders with provided data.
  * @param {Object} data - The data object containing client information
- * @param {string} data.clientName - The name of the client (must be a non-empty string)
- * @param {string} data.botGoal - The goal of the bot (must be a non-empty string)
+ * @param {string} data.clientName - The name of the client (must be a non-empty string, leading/trailing whitespace will be preserved)
+ * @param {string} data.botGoal - The goal of the bot (must be a non-empty string, leading/trailing whitespace will be preserved)
  * @returns {string} The generated code with placeholders replaced
  * @throws {Error} If data is invalid or template cannot be read
  */
@@ -41,7 +41,7 @@ export function generateCode(data) {
       templateCache.set(templatePath, templateContent);
     }
   } catch (error) {
-    throw new Error(`Failed to read template file: ${error.message}`);
+    throw new Error(`Template error: failed to read template file - ${error.message}`);
   }
 
   // Replace placeholders with actual values
