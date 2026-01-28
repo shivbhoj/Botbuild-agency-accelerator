@@ -7,7 +7,6 @@ const __dirname = path.dirname(__filename);
 
 // Optimization: Cache templates in memory
 const templateCache = new Map();
-const MAX_CACHE_SIZE = 100; // Prevent unbounded memory growth
 
 /**
  * Generates code from a template by replacing placeholders with provided data
@@ -23,11 +22,11 @@ export function generateCode(data) {
     throw new Error('Invalid data parameter: expected an object');
   }
   
-  if (!data.clientName || typeof data.clientName !== 'string') {
+  if (typeof data.clientName !== 'string' || !data.clientName.trim()) {
     throw new Error('Invalid or missing data.clientName: expected a non-empty string');
   }
   
-  if (!data.botGoal || typeof data.botGoal !== 'string') {
+  if (typeof data.botGoal !== 'string' || !data.botGoal.trim()) {
     throw new Error('Invalid or missing data.botGoal: expected a non-empty string');
   }
 
@@ -40,13 +39,6 @@ export function generateCode(data) {
     // Error handling for file system operations
     try {
       templateContent = fs.readFileSync(templatePath, 'utf-8');
-      
-      // Implement cache size limit
-      if (templateCache.size >= MAX_CACHE_SIZE) {
-        const firstKey = templateCache.keys().next().value;
-        templateCache.delete(firstKey);
-      }
-      
       templateCache.set(templatePath, templateContent);
     } catch (error) {
       if (error.code === 'ENOENT') {
@@ -58,10 +50,10 @@ export function generateCode(data) {
     }
   }
 
-  // Safe string replacement - using regex for pattern matching (placeholders)
-  // but using the raw data values for replacement (no need to escape replacement text)
-  let result = templateContent.replace(/{{CLIENT_NAME}}/g, data.clientName);
-  result = result.replace(/{{BOT_GOAL}}/g, data.botGoal);
+  // Safe string replacement using replacement function to avoid regex pattern interpretation
+  // This prevents issues with special patterns like $&, $`, $', $1, etc. in the data values
+  let result = templateContent.replace(/{{CLIENT_NAME}}/g, () => data.clientName);
+  result = result.replace(/{{BOT_GOAL}}/g, () => data.botGoal);
 
   return result;
 }

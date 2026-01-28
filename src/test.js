@@ -133,6 +133,70 @@ runTest("Long strings handled correctly", () => {
   assert(output.includes(data.botGoal));
 });
 
+// Test 12: Whitespace-only clientName
+runTest("Whitespace-only clientName throws error", () => {
+  try {
+    generateCode({ clientName: "   ", botGoal: "Test" });
+    throw new Error("Should have thrown error for whitespace-only clientName");
+  } catch (e) {
+    assert(e.message.includes("clientName"));
+  }
+});
+
+// Test 13: Whitespace-only botGoal
+runTest("Whitespace-only botGoal throws error", () => {
+  try {
+    generateCode({ clientName: "Test", botGoal: "\t\n  " });
+    throw new Error("Should have thrown error for whitespace-only botGoal");
+  } catch (e) {
+    assert(e.message.includes("botGoal"));
+  }
+});
+
+// Test 14: Regex replacement pattern $& in botGoal
+runTest("Regex pattern $& in botGoal", () => {
+  const data = {
+    clientName: "Test Clinic",
+    botGoal: "Service $& Support"
+  };
+
+  const output = generateCode(data);
+  assert(output.includes("Goal: Service $& Support"));
+});
+
+// Test 15: Regex replacement pattern $` in clientName
+runTest("Regex pattern $` in clientName", () => {
+  const data = {
+    clientName: "Before $` After",
+    botGoal: "Appointment"
+  };
+
+  const output = generateCode(data);
+  assert(output.includes("Fulfillment for Before $` After"));
+});
+
+// Test 16: Regex replacement pattern $' in botGoal
+runTest("Regex pattern $' in botGoal", () => {
+  const data = {
+    clientName: "Clinic",
+    botGoal: "Test $' Pattern"
+  };
+
+  const output = generateCode(data);
+  assert(output.includes("Goal: Test $' Pattern"));
+});
+
+// Test 17: Backreference pattern $1 in clientName
+runTest("Backreference $1 in clientName", () => {
+  const data = {
+    clientName: "Offer $100 discount",
+    botGoal: "Booking"
+  };
+
+  const output = generateCode(data);
+  assert(output.includes("Fulfillment for Offer $100 discount"));
+});
+
 console.log("\n" + "=".repeat(50));
 console.log(`Tests completed: ${testsPassed} passed, ${testsFailed} failed`);
 
