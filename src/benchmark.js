@@ -1,7 +1,7 @@
 import { generateCode } from './core/generator.js';
 import { performance } from 'perf_hooks';
 
-const ITERATIONS = 1000;
+const ITERATIONS = 100000;
 const data = {
   clientName: "Radiant Smiles Dental Clinic",
   botGoal: "Appointment Booking"
