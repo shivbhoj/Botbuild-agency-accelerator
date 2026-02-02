@@ -5,23 +5,32 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Optimization: Cache templates in memory
+// Optimization: Cache compiled templates in memory
 const templateCache = new Map();
+
+function compileTemplate(content) {
+  // Split by placeholders, keeping them in the array
+  // The regex captures the placeholders so they are included in the split result
+  return content.split(/({{CLIENT_NAME}}|{{BOT_GOAL}})/);
+}
 
 export function generateCode(data) {
   const templatePath = path.join(__dirname, '../templates/appointment_booking.js');
 
-  let templateContent;
+  let compiledTemplate;
   if (templateCache.has(templatePath)) {
-    templateContent = templateCache.get(templatePath);
+    compiledTemplate = templateCache.get(templatePath);
   } else {
-    templateContent = fs.readFileSync(templatePath, 'utf-8');
-    templateCache.set(templatePath, templateContent);
+    const rawContent = fs.readFileSync(templatePath, 'utf-8');
+    compiledTemplate = compileTemplate(rawContent);
+    templateCache.set(templatePath, compiledTemplate);
   }
 
-  // Simple string replacement
-  templateContent = templateContent.replace(/{{CLIENT_NAME}}/g, data.clientName);
-  templateContent = templateContent.replace(/{{BOT_GOAL}}/g, data.botGoal);
-
-  return templateContent;
+  // Fast string reconstruction
+  // We avoid regex replacement on every call
+  return compiledTemplate.map(part => {
+    if (part === '{{CLIENT_NAME}}') return data.clientName;
+    if (part === '{{BOT_GOAL}}') return data.botGoal;
+    return part;
+  }).join('');
 }
